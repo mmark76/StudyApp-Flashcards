@@ -15,6 +15,12 @@ Open `index.html` in a modern browser. No installation, account, external librar
 
 Keyboard: `Space` reveals/skips; after reveal, `1` means review again, and `2` means I know it. Keyboard shortcuts do not override focused form controls.
 
+### Appearance
+
+The Flashcards interface follows the parent [StudyApp Workspace](https://studyapp.markellosecosystem.com/#/workspace-beta) in both **Light** and **Dark** modes, using its neutral surfaces and warm accents. Use the header's `Dark` / `Light` button to switch. The preference stays in this browser separately from learning progress. The header also returns to StudyApp and the Markellos Ecosystem.
+
+This is a focused visual alignment, not a complete migration to the shared dashboard shell. See [visual alignment decisions and verification](docs/visual-alignment.md).
+
 ## Data and privacy
 
 - Built-in terminology lives in `src/decks.js`. Each card has a stable ID, English definition, Greek explanation, example and optional distinction.
@@ -30,10 +36,12 @@ Keyboard: `Space` reveals/skips; after reveal, `1` means review again, and `2` m
 | --- | --- |
 | `index.html` | Semantic, accessible user interface |
 | `src/styles.css` | Responsive presentation |
+| `src/appearance.js` | Independent, validated Light/Dark appearance preference |
 | `src/decks.js` | Independent, editable terminology decks |
 | `src/storage.js` | Persistent progress and versioned backup validation |
 | `src/app.js` | Card presentation and study-session workflow |
 | `tests/flashcards.test.cjs` | Automated data and storage checks |
+| `tests/appearance.test.cjs` | Appearance switch, storage failure, header links |
 | `.github/workflows/ci.yml` | Checks on GitHub pull requests |
 
 ## Quality approach
@@ -56,8 +64,9 @@ Requires Node.js for the automated checks only. The web app itself needs no Node
 ```sh
 node --check src/decks.js
 node --check src/storage.js
+node --check src/appearance.js
 node --check src/app.js
-node --test tests/flashcards.test.cjs
+node --test tests/*.test.cjs
 ```
 
 ## Versioning
