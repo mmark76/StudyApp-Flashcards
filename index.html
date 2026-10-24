@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A focused flashcards trainer for academic terminology and active recall.">
+  <title>StudyApp Flashcards</title>
+  <link rel="stylesheet" href="src/styles.css">
+  <script src="src/decks.js" defer></script>
+  <script src="src/storage.js" defer></script>
+  <script src="src/app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="header">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">S</span><div>
+        <p class="eyebrow">STUDYAPP · LEARNING TOOLS</p>
+        <h1>Flashcards<span class="accent">.</span></h1>
+      </div></div>
+      <span class="version">v0.1.0 · Preview</span>
+    </header>
+
+    <section class="intro" aria-labelledby="intro-title">
+      <div>
+        <p class="eyebrow">ACTIVE RECALL</p>
+        <h2 id="intro-title">Learn the concept.<br><em>Remember the language.</em></h2>
+        <p>Try to define each term in English before revealing the answer. A few minutes of focused recall is enough for one session.</p>
+      </div>
+      <div class="deck-control">
+        <label for="deck-select">Study deck</label>
+        <select id="deck-select" aria-label="Study deck"></select>
+        <p id="deck-details" class="muted"></p>
+      </div>
+    </section>
+
+    <section class="session" aria-label="Flashcards study session">
+      <div class="session-top">
+        <div><span class="eyebrow">YOUR SESSION</span><p id="session-count" class="count">0 / 0 mastered</p></div>
+        <span id="remaining-count" class="pill">0 remaining</span>
+      </div>
+      <div class="meter" role="progressbar" aria-label="Session progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-meter"><div id="progress-fill"></div></div>
+
+      <article class="flashcard" id="flashcard" aria-live="polite" aria-atomic="true">
+        <div id="question-side">
+          <div class="card-kicker"><span class="dot"></span> DEFINE IN ENGLISH</div>
+          <h3 id="card-term">Loading…</h3>
+          <p class="card-helper">Say the definition out loud or formulate it in your mind.</p>
+        </div>
+        <div id="answer-side" hidden>
+          <div class="card-kicker"><span class="dot"></span> ANSWER & CONTEXT</div>
+          <h3 id="answer-term"></h3>
+          <div class="answer-block"><span>ENGLISH DEFINITION</span><p id="answer-en"></p></div>
+          <div class="answer-block" lang="el"><span>ΕΛΛΗΝΙΚΗ ΕΞΗΓΗΣΗ</span><p id="answer-el"></p></div>
+          <div class="answer-block"><span>EXAMPLE</span><p id="answer-example"></p></div>
+          <div class="answer-block" id="distinction-block"><span>KEY DISTINCTION</span><p id="answer-distinction"></p></div>
+        </div>
+        <div id="done-side" hidden>
+          <div class="complete-icon" aria-hidden="true">✓</div>
+          <h3>Session complete.</h3>
+          <p>You have recalled every term in this deck. You can start a new round whenever you like.</p>
+        </div>
+      </article>
+
+      <div class="action-bar" id="action-bar">
+        <button type="button" id="reveal-btn" class="btn primary">Reveal answer <kbd>Space</kbd></button>
+        <button type="button" id="skip-btn" class="btn subtle">Skip for now</button>
+        <div id="grade-actions" hidden>
+          <button type="button" id="again-btn" class="btn repeat">↺ Review again <kbd>1</kbd></button>
+          <button type="button" id="know-btn" class="btn success">✓ I know it <kbd>2</kbd></button>
+        </div>
+        <button type="button" id="restart-btn" class="btn primary" hidden>Start a new round</button>
+      </div>
+      <p class="session-hint">Space: reveal or skip · 1: review again · 2: I know it</p>
+    </section>
+
+    <footer class="footer">
+      <div><strong>Progress stays in this browser.</strong><p>Save a backup if you want to keep or move your results.</p></div>
+      <div class="footer-actions">
+        <button id="download-btn" type="button" class="btn subtle">↓ Download backup</button>
+        <label for="import-input" class="btn subtle import-label">↑ Restore backup</label>
+        <input id="import-input" type="file" accept=".json,application/json" hidden>
+      </div>
+    </footer>
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+    <div class="legal">© Markellos Markides · StudyApp Flashcards · No account, no analytics, no cloud data storage</div>
+  </main>
+</body>
+</html>
