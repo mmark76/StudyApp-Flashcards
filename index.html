@@ -3,28 +3,36 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="light dark">
   <meta name="description" content="A focused flashcards trainer for academic terminology and active recall.">
   <title>StudyApp Flashcards</title>
   <link rel="stylesheet" href="src/styles.css">
   <script src="src/decks.js" defer></script>
   <script src="src/storage.js" defer></script>
+  <script src="src/appearance.js" defer></script>
   <script src="src/app.js" defer></script>
 </head>
 <body>
-  <main class="shell">
-    <header class="header">
-      <div class="brand"><span class="brand-mark" aria-hidden="true">S</span><div>
-        <p class="eyebrow">STUDYAPP · LEARNING TOOLS</p>
-        <h1>Flashcards<span class="accent">.</span></h1>
-      </div></div>
-      <span class="version">v0.1.0 · Preview</span>
-    </header>
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <a class="brand-home" href="https://studyapp.markellosecosystem.com/#/workspace-beta">Study App</a>
+        <span class="brand-section">Flashcards</span>
+        <span class="version">v0.1.0 · Preview</span>
+      </div>
+      <nav class="header-actions" aria-label="Application links and appearance">
+        <a class="studyapp-return" href="https://studyapp.markellosecosystem.com/#/workspace-beta">Back to StudyApp</a>
+        <a class="ecosystem-return" href="https://markellosecosystem.com/">Back to markellosecosystem</a>
+        <button class="theme-toggle" type="button" id="theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">Dark</button>
+      </nav>
+    </div>
+  </header>
+  <main class="shell" id="main-content">
 
     <section class="intro" aria-labelledby="intro-title">
       <div>
-        <p class="eyebrow">ACTIVE RECALL</p>
-        <h2 id="intro-title">Learn the concept.<br><em>Remember the language.</em></h2>
+        <p class="eyebrow">PRACTICE &amp; MASTERY · ACTIVE RECALL</p>
+        <h2 id="intro-title">Learn the concept. <em>Remember the language.</em></h2>
         <p>Try to define each term in English before revealing the answer. A few minutes of focused recall is enough for one session.</p>
       </div>
       <div class="deck-control">
@@ -74,16 +82,16 @@
       <p class="session-hint">Space: reveal or skip · 1: review again · 2: I know it</p>
     </section>
 
-    <footer class="footer">
+    <section class="footer" aria-label="Progress backup">
       <div><strong>Progress stays in this browser.</strong><p>Save a backup if you want to keep or move your results.</p></div>
       <div class="footer-actions">
         <button id="download-btn" type="button" class="btn subtle">↓ Download backup</button>
         <button id="restore-btn" type="button" class="btn subtle">↑ Restore backup</button>
         <input id="import-input" type="file" accept=".json,application/json" hidden>
       </div>
-    </footer>
+    </section>
     <p id="notice" class="notice" role="status" aria-live="polite"></p>
-    <div class="legal">© Markellos · StudyApp Flashcards · No account, no analytics, no cloud data storage</div>
+    <footer class="legal">© 2026 Markellos Markides. All rights reserved.<br>v0.1.0 · Preview · No account, analytics or cloud data storage</footer>
   </main>
 </body>
 </html>

@@ -21,6 +21,7 @@ jobs:
         run: |
           node --check src/decks.js
           node --check src/storage.js
+          node --check src/appearance.js
           node --check src/app.js
       - name: Run unit and workflow tests
-        run: node --test tests/flashcards.test.cjs
+        run: node --test tests/*.test.cjs
