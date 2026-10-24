@@ -6,11 +6,12 @@
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="A focused flashcards trainer for academic terminology and active recall.">
   <title>StudyApp Flashcards</title>
-  <link rel="stylesheet" href="src/styles.css?v=0.1.1">
-  <script src="src/decks.js?v=0.1.1" defer></script>
-  <script src="src/storage.js?v=0.1.1" defer></script>
-  <script src="src/appearance.js?v=0.1.1" defer></script>
-  <script src="src/app.js?v=0.1.1" defer></script>
+  <link rel="stylesheet" href="src/styles.css?v=0.2.0">
+  <script src="src/decks.js?v=0.2.0" defer></script>
+  <script src="src/storage.js?v=0.2.0" defer></script>
+  <script src="src/scheduler.js?v=0.2.0" defer></script>
+  <script src="src/appearance.js?v=0.2.0" defer></script>
+  <script src="src/app.js?v=0.2.0" defer></script>
 </head>
 <body>
   <header class="header">
@@ -18,7 +19,7 @@
       <div class="brand">
         <a class="brand-home" href="https://studyapp.markellosecosystem.com/#/workspace-beta">Study App</a>
         <span class="brand-section">Flashcards</span>
-        <span class="version">v0.1.1 · Preview</span>
+        <span class="version">v0.2.0 · Preview</span>
       </div>
       <nav class="header-actions" aria-label="Application links and appearance">
         <a class="studyapp-return" href="https://studyapp.markellosecosystem.com/#/workspace-beta">Back to StudyApp</a>
@@ -42,6 +43,14 @@
       </div>
     </section>
 
+    <section class="mode-panel" aria-labelledby="mode-title">
+      <div><p class="eyebrow" id="mode-title">STUDY MODE</p><p id="mode-description">Choose how you want to study.</p></div>
+      <div class="mode-switch" role="group" aria-label="Study mode">
+        <button id="mode-quick" type="button" aria-pressed="true">Quick</button>
+        <button id="mode-deep" type="button" aria-pressed="false">Deep</button>
+      </div>
+    </section>
+
     <section class="session" aria-label="Flashcards study session">
       <div class="session-top">
         <div><span class="eyebrow">YOUR SESSION</span><p id="session-count" class="count">0 / 0 mastered</p></div>
@@ -60,13 +69,13 @@
           <h3 id="answer-term"></h3>
           <div class="answer-block"><span>ENGLISH DEFINITION</span><p id="answer-en"></p></div>
           <div class="answer-block" lang="el"><span>ΕΛΛΗΝΙΚΗ ΕΞΗΓΗΣΗ</span><p id="answer-el"></p></div>
-          <div class="answer-block"><span>EXAMPLE</span><p id="answer-example"></p></div>
+          <div class="answer-block" id="example-block"><span>EXAMPLE</span><p id="answer-example"></p></div>
           <div class="answer-block" id="distinction-block"><span>KEY DISTINCTION</span><p id="answer-distinction"></p></div>
         </div>
         <div id="done-side" hidden>
           <div class="complete-icon" aria-hidden="true">✓</div>
-          <h3>Session complete.</h3>
-          <p>You have recalled every term in this deck. You can start a new round whenever you like.</p>
+          <h3 id="done-title">Session complete.</h3>
+          <p id="done-description">You can start a new round whenever you like.</p>
         </div>
       </article>
 
@@ -75,11 +84,12 @@
         <button type="button" id="skip-btn" class="btn subtle">Skip for now</button>
         <div id="grade-actions" hidden>
           <button type="button" id="again-btn" class="btn repeat">↺ Review again <kbd>1</kbd></button>
+          <button type="button" id="difficult-btn" class="btn subtle" hidden>Difficult <kbd>3</kbd></button>
           <button type="button" id="know-btn" class="btn success">✓ I know it <kbd>2</kbd></button>
         </div>
         <button type="button" id="restart-btn" class="btn primary" hidden>Start a new round</button>
       </div>
-      <p class="session-hint">Space: reveal or skip · 1: review again · 2: I know it</p>
+      <p id="session-hint" class="session-hint">Space: reveal or skip · 1: review again · 2: I know it</p>
     </section>
 
     <section class="footer" aria-label="Progress backup">
@@ -91,7 +101,7 @@
       </div>
     </section>
     <p id="notice" class="notice" role="status" aria-live="polite"></p>
-    <footer class="legal">© 2026 Markellos Markides. All rights reserved.<br>v0.1.1 · Preview · No account, analytics or cloud data storage</footer>
+    <footer class="legal">© 2026 Markellos Markides. All rights reserved.<br>v0.2.0 · Preview · No account, analytics or cloud data storage</footer>
   </main>
 </body>
 </html>

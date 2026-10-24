@@ -46,6 +46,7 @@ function createRuntime(withInterface = false) {
   const context = { window, document };
   vm.runInNewContext(read("decks.js"), context, { filename: "decks.js" });
   vm.runInNewContext(read("storage.js"), context, { filename: "storage.js" });
+  vm.runInNewContext(read("scheduler.js"), context, { filename: "scheduler.js" });
   if (withInterface) vm.runInNewContext(read("app.js"), context, { filename: "app.js" });
   return { window, element, handlers, memory };
 }
