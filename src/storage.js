@@ -3,7 +3,29 @@
   "use strict";
   const KEY = "studyapp-flashcards-progress-v1";
   const SCHEMA_VERSION = 1;
-  const APP_VERSION = "0.1.0";
+  const APP_VERSION = "0.2.0";
+
+  function normalizeDeep(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      throw new Error("Invalid Deep review record.");
+    }
+    if (![0, 1, 2].includes(value.score)
+        || !Number.isSafeInteger(value.repetitions) || value.repetitions < 1 || value.repetitions > 1000000
+        || !Number.isSafeInteger(value.intervalDays) || value.intervalDays < 0 || value.intervalDays > 180
+        || !Number.isSafeInteger(value.lapses) || value.lapses < 0 || value.lapses > value.repetitions
+        || typeof value.lastReviewedAt !== "string" || !Number.isFinite(Date.parse(value.lastReviewedAt))
+        || typeof value.nextReviewAt !== "string" || !Number.isFinite(Date.parse(value.nextReviewAt))) {
+      throw new Error("Invalid Deep review record.");
+    }
+    return {
+      score: value.score,
+      repetitions: value.repetitions,
+      intervalDays: value.intervalDays,
+      nextReviewAt: value.nextReviewAt,
+      lastReviewedAt: value.lastReviewedAt,
+      lapses: value.lapses
+    };
+  }
 
   function normalize(raw, decks) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("Invalid backup format.");
@@ -19,11 +41,16 @@
       for (const card of deck.cards) {
         const entry = input[card.id];
         if (!entry || typeof entry !== "object" || Array.isArray(entry)) continue;
-        if (entry.last !== "known" && entry.last !== "again") continue;
+        const hasQuick = entry.last === "known" || entry.last === "again";
+        const hasDeep = Object.prototype.hasOwnProperty.call(entry, "deep");
+        if (!hasQuick && !hasDeep) continue;
         cleaned[card.id] = {
-          last: entry.last,
-          known: boundedCount(entry.known),
-          again: boundedCount(entry.again)
+          ...(hasQuick ? {
+            last: entry.last,
+            known: boundedCount(entry.known),
+            again: boundedCount(entry.again)
+          } : {}),
+          ...(hasDeep ? { deep: normalizeDeep(entry.deep) } : {})
         };
       }
       result[deck.id] = cleaned;

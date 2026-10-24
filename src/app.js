@@ -1,11 +1,12 @@
-/* Application controller: presentation and study-session workflow only. */
+/* Interface and study-session controller; scheduling and storage stay separate. */
 (function startApplication(root) {
   "use strict";
   const decks = root.StudyFlashcardsDecks;
   const storage = root.StudyFlashcardsStorage;
+  const scheduler = root.StudyFlashcardsSchedule;
   const byId = (id) => document.getElementById(id);
 
-  if (!Array.isArray(decks) || !decks.length || !storage) {
+  if (!Array.isArray(decks) || !decks.length || !storage || !scheduler) {
     byId("card-term").textContent = "Flashcards are unavailable.";
     return;
   }
@@ -13,10 +14,12 @@
   const loaded = storage.load(decks);
   let progress = loaded.progress;
   let deck = decks[0];
+  let mode = "quick";
   let queue = [];
   let current = null;
   let answerVisible = false;
   let knownThisSession = 0;
+  let sessionTotal = 0;
 
   function announce(message, error = false) {
     const notice = byId("notice");
@@ -25,18 +28,33 @@
   }
 
   function currentProgress() {
-    if (!progress[deck.id]) progress[deck.id] = Object.create(null);
-    return progress[deck.id];
+    return progress[deck.id] || Object.create(null);
   }
 
-  function orderCards() {
+  function orderQuickCards() {
     const previous = currentProgress();
     const rank = (card) => previous[card.id]?.last === "again" ? 0 : previous[card.id]?.last === "known" ? 2 : 1;
     return [...deck.cards].sort((a, b) => rank(a) - rank(b));
   }
 
+  function setMode(newMode) {
+    if (newMode !== "quick" && newMode !== "deep") return;
+    mode = newMode;
+    byId("mode-quick").setAttribute("aria-pressed", String(mode === "quick"));
+    byId("mode-deep").setAttribute("aria-pressed", String(mode === "deep"));
+    byId("mode-description").textContent = mode === "quick"
+      ? "Quick · Recall key terms and revisit difficult cards during this session."
+      : "Deep · Study examples and distinctions; revisit cards when they become due.";
+    byId("difficult-btn").hidden = mode !== "deep";
+    beginSession();
+    announce("");
+  }
+
   function beginSession() {
-    queue = orderCards();
+    queue = mode === "deep"
+      ? scheduler.dueCards(deck, progress)
+      : orderQuickCards();
+    sessionTotal = queue.length;
     knownThisSession = 0;
     current = null;
     advance();
@@ -51,14 +69,12 @@
   function render() {
     const complete = !current;
     const remaining = queue.length + (complete ? 0 : 1);
-    const fraction = Math.round((knownThisSession / deck.cards.length) * 100);
-
+    const fraction = sessionTotal ? Math.round(knownThisSession / sessionTotal * 100) : 0;
     byId("deck-details").textContent = `${deck.cards.length} terms · ${deck.description}`;
-    byId("session-count").textContent = `${knownThisSession} / ${deck.cards.length} mastered`;
+    byId("session-count").textContent = `${knownThisSession} / ${sessionTotal} mastered`;
     byId("remaining-count").textContent = `${remaining} remaining`;
     byId("progress-meter").setAttribute("aria-valuenow", String(fraction));
     byId("progress-fill").style.width = `${fraction}%`;
-
     byId("question-side").hidden = complete || answerVisible;
     byId("answer-side").hidden = complete || !answerVisible;
     byId("done-side").hidden = !complete;
@@ -66,15 +82,29 @@
     byId("skip-btn").hidden = complete;
     byId("grade-actions").hidden = complete || !answerVisible;
     byId("restart-btn").hidden = !complete;
+    byId("difficult-btn").hidden = mode !== "deep";
+    byId("session-hint").textContent = mode === "deep"
+      ? "Space: reveal or skip · 1: Again · 2: Known · 3: Difficult"
+      : "Space: reveal or skip · 1: Review again · 2: I know it";
 
-    if (complete) return;
+    if (complete) {
+      const next = mode === "deep" ? scheduler.nextDueAt(deck, progress) : null;
+      byId("done-title").textContent = sessionTotal ? "Session complete." :
+        mode === "deep" ? "Nothing due for review." : "Session complete.";
+      byId("done-description").textContent = sessionTotal
+        ? "Your progress was saved. You can start another round whenever you like."
+        : next ? `Your next Deep review is due ${new Date(next).toLocaleString()}.`
+          : "You have no scheduled reviews. Switch to Quick or add a deck.";
+      return;
+    }
     byId("card-term").textContent = current.term;
     byId("answer-term").textContent = current.term;
     byId("answer-en").textContent = current.en;
     byId("answer-el").textContent = current.el;
     byId("answer-example").textContent = current.example;
     byId("answer-distinction").textContent = current.distinction || "";
-    byId("distinction-block").hidden = !current.distinction;
+    byId("example-block").hidden = mode !== "deep";
+    byId("distinction-block").hidden = mode !== "deep" || !current.distinction;
   }
 
   function revealAnswer() {
@@ -85,27 +115,39 @@
 
   function skipCard() {
     if (!current) return;
-    queue.push(current);
+    if (mode === "quick") queue.push(current);
     advance();
   }
 
   function grade(result) {
-    if (!current || !answerVisible || (result !== "known" && result !== "again")) return;
-    const entry = currentProgress()[current.id] || { last: result, known: 0, again: 0 };
-    entry[result] = (entry[result] || 0) + 1;
-    entry.last = result;
-    currentProgress()[current.id] = entry;
-
-    if (!storage.save(progress)) {
-      announce("Browser storage is unavailable. Download a backup to preserve your progress.", true);
-    }
-    if (result === "known") {
-      knownThisSession++;
+    if (!current || !answerVisible || !["known", "again", "difficult"].includes(result)) return;
+    if (result === "difficult" && mode !== "deep") return;
+    const currentDeck = currentProgress();
+    const oldEntry = currentDeck[current.id] || {};
+    let updatedEntry;
+    if (mode === "quick") {
+      updatedEntry = {
+        ...oldEntry,
+        last: result,
+        known: (oldEntry.known || 0) + (result === "known" ? 1 : 0),
+        again: (oldEntry.again || 0) + (result === "again" ? 1 : 0)
+      };
     } else {
-      // Bring difficult terms back after up to two other cards in this session.
+      const rating = result === "again" ? 0 : result === "difficult" ? 1 : 2;
+      updatedEntry = { ...oldEntry, deep: scheduler.schedule(oldEntry.deep, rating) };
+    }
+    const updated = { ...progress, [deck.id]: { ...currentDeck, [current.id]: updatedEntry } };
+    if (!storage.save(updated)) {
+      announce("Progress could not be saved. Retry this card without losing your answer.", true);
+      return;
+    }
+    progress = updated;
+    if (result === "known") knownThisSession++;
+    if (result === "again" && mode === "quick") {
       queue.splice(Math.min(2, queue.length), 0, current);
     }
     advance();
+    announce("");
   }
 
   const selector = byId("deck-select");
@@ -115,18 +157,20 @@
     option.textContent = item.title;
     selector.appendChild(option);
   }
-
   selector.addEventListener("change", () => {
-    const selected = decks.find((item) => item.id === selector.value);
+    const selected = decks.find(item => item.id === selector.value);
     if (!selected) return;
     deck = selected;
     beginSession();
     announce("");
   });
+  byId("mode-quick").addEventListener("click", () => setMode("quick"));
+  byId("mode-deep").addEventListener("click", () => setMode("deep"));
   byId("reveal-btn").addEventListener("click", revealAnswer);
   byId("skip-btn").addEventListener("click", skipCard);
   byId("know-btn").addEventListener("click", () => grade("known"));
   byId("again-btn").addEventListener("click", () => grade("again"));
+  byId("difficult-btn").addEventListener("click", () => grade("difficult"));
   byId("restart-btn").addEventListener("click", () => { beginSession(); announce("New round started."); });
   byId("download-btn").addEventListener("click", () => {
     try {
@@ -136,9 +180,7 @@
       announce("The download could not be started in this browser.", true);
     }
   });
-
   byId("restore-btn").addEventListener("click", () => byId("import-input").click());
-
   byId("import-input").addEventListener("change", async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -157,7 +199,6 @@
       event.target.value = "";
     }
   });
-
   document.addEventListener("keydown", (event) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
     if (event.target.closest("button,select,input,textarea,[contenteditable]")) return;
@@ -169,9 +210,10 @@
       grade("again");
     } else if (event.key === "2") {
       grade("known");
+    } else if (event.key === "3") {
+      grade("difficult");
     }
   });
-
-  beginSession();
+  setMode("quick");
   if (loaded.warning) announce(loaded.warning, true);
 })(window);

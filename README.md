@@ -21,6 +21,12 @@ The Flashcards interface follows the parent [StudyApp Workspace](https://studyap
 
 This is a focused visual alignment, not a complete migration to the shared dashboard shell. See [visual alignment decisions and verification](docs/visual-alignment.md).
 
+## Study modes
+
+- **Quick** retains same-session review and quick recall.
+- **Deep** adds due-date-based reviews with three ratings (Again, Difficult, Known), plus detailed examples and key distinctions.
+- The first release is a standalone-mode preview, not yet a shared code package with StudyApp or a migration to IndexedDB. See [Quick/Deep design](docs/quick-deep.md).
+
 ## Data and privacy
 
 - Built-in terminology lives in `src/decks.js`. Each card has a stable ID, English definition, Greek explanation, example and optional distinction.
@@ -64,6 +70,7 @@ Requires Node.js for the automated checks only. The web app itself needs no Node
 ```sh
 node --check src/decks.js
 node --check src/storage.js
+node --check src/scheduler.js
 node --check src/appearance.js
 node --check src/app.js
 node --test tests/*.test.cjs
@@ -71,4 +78,4 @@ node --test tests/*.test.cjs
 
 ## Versioning
 
-Current preview version: **0.1.1**. Static asset URLs include the release version to prevent cached CSS/JavaScript from becoming mismatched with the published HTML. The progress backup has a separate `schemaVersion: 1` for import compatibility. Future releases should follow Semantic Versioning and document any schema migrations before changing the format.
+Current preview version: **0.2.0**. Static asset URLs use ?v=0.2.0 for cache-safe Cloudflare Pages updates. The progress backup has a separate `schemaVersion: 1` for import compatibility. Future releases should follow Semantic Versioning and document any schema migrations before changing the format.
