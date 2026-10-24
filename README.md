@@ -71,4 +71,4 @@ node --test tests/*.test.cjs
 
 ## Versioning
 
-Current preview version: **0.1.0**. The progress backup has a separate `schemaVersion: 1` for import compatibility. Future releases should follow Semantic Versioning and document any schema migrations before changing the format.
+Current preview version: **0.1.1**. Static asset URLs include the release version to prevent cached CSS/JavaScript from becoming mismatched with the published HTML. The progress backup has a separate `schemaVersion: 1` for import compatibility. Future releases should follow Semantic Versioning and document any schema migrations before changing the format.
