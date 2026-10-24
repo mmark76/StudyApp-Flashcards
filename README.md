@@ -22,6 +22,7 @@ Keyboard: `Space` reveals/skips; after reveal, `1` means review again, and `2` m
 - **Download backup** creates a versioned JSON progress backup. **Restore backup** validates known deck/card IDs and asks before replacing stored progress.
 - The JSON backup contains progress only. The academic definitions remain in the application source.
 - For this MVP there is **no account, analytics, cloud sync or claim of long-term spaced-repetition scheduling**.
+- Numerical examples illustrate the method. Confirm the actual token totals and vocabulary size against the assignment before using those figures in an exam answer.
 
 ## Structure
 

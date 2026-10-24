@@ -33,7 +33,7 @@ function createRuntime(withInterface = false) {
         appendChild(child) { this.children.push(child); },
         setAttribute(key, value) { this.attributes[key] = value; },
         addEventListener(key, callback) { this.listeners[key] = callback; },
-        click() { this.listeners.click?.(); }
+        click() { this.clicked = (this.clicked || 0) + 1; this.listeners.click?.(); }
       });
     }
     return elements.get(id);
@@ -113,4 +113,11 @@ test("revealing and grading cards advances the session and persists the result",
   const state = window.StudyFlashcardsStorage.load(window.StudyFlashcardsDecks).progress;
   assert.equal(state.cos512["training-dataset"].last, "again");
   assert.equal(state.cos512["class-label"].last, "known");
+});
+
+test("restore uses a keyboard-accessible button to open the local file picker", () => {
+  const { element } = createRuntime(true);
+  assert.equal(element("import-input").clicked, undefined);
+  element("restore-btn").click();
+  assert.equal(element("import-input").clicked, 1);
 });

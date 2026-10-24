@@ -47,7 +47,7 @@
           id: "vocabulary", term: "Vocabulary",
           en: "The set of distinct tokens retained from the training corpus after preprocessing.",
           el: "Το σύνολο των διαφορετικών λέξεων που προκύπτουν από τα δεδομένα εκπαίδευσης.",
-          example: "The assignment has 13 distinct vocabulary words.",
+          example: "A sample training corpus may contain 13 distinct vocabulary words.",
           distinction: "Vocabulary size counts unique words; total token count includes repeated words."
         },
         {
@@ -61,35 +61,35 @@
           id: "bag-of-words", term: "Bag of Words (BoW)",
           en: "A text representation that records word occurrences without retaining their original order.",
           el: "Αριθμητική αναπαράσταση του κειμένου με βάση τις εμφανίσεις λέξεων, χωρίς τη σειρά τους.",
-          example: "'Win a free iPhone' is represented by counts in the 13-word vocabulary.",
+          example: "'Win a free iPhone' is represented by counts over the training vocabulary.",
           distinction: "A standard BoW representation does not preserve word order or grammatical context."
         },
         {
           id: "feature-vector", term: "Feature Vector",
           en: "An ordered list of numerical feature values used to represent one example.",
           el: "Μια διατεταγμένη σειρά αριθμών που περιγράφει ένα παράδειγμα.",
-          example: "Each SMS has a 13-dimensional vector, with one position per vocabulary word.",
+          example: "With 13 distinct vocabulary words, each SMS has a 13-dimensional count vector.",
           distinction: "The vector follows a fixed vocabulary order; it does not retain the SMS word order."
         },
         {
           id: "word-frequency", term: "Word Frequency",
           en: "The number of times a given word occurs in a specified collection of text.",
           el: "Πόσες φορές εμφανίζεται μια συγκεκριμένη λέξη στο εξεταζόμενο σύνολο κειμένων.",
-          example: "'win' occurs twice among the Spam training messages.",
+          example: "If 'win' occurs twice among the Spam examples, its frequency in that class is 2.",
           distinction: "Word frequency counts appearances, not just how many messages contain the word."
         },
         {
           id: "prior-probability", term: "Prior Probability",
           en: "The probability assigned to a class before considering the evidence in the new input.",
           el: "Η αρχική πιθανότητα μιας κατηγορίας, πριν εξετάσουμε τις λέξεις του νέου μηνύματος.",
-          example: "P(Spam) = P(Normal) = 2/4 = 0.5.",
+          example: "If two of four training messages are Spam, P(Spam) = 2/4 = 0.5.",
           distinction: "A prior is about the class before observing the new message, not the final classification confidence."
         },
         {
           id: "likelihood", term: "Likelihood / Word Likelihood",
           en: "In this model, the probability of observing a particular word given a class, written P(word | class).",
           el: "Η πιθανότητα εμφάνισης μιας λέξης όταν θεωρούμε δεδομένη την κατηγορία.",
-          example: "With Laplace smoothing, P(win | Spam) = (2 + 1)/(8 + 13) = 3/21.",
+          example: "If Spam has 8 word tokens, 13 distinct vocabulary words and 2 occurrences of 'win', P(win | Spam) = (2 + 1)/(8 + 13) = 3/21.",
           distinction: "P(word | Spam) is not the same quantity as P(Spam | word)."
         },
         {
@@ -124,21 +124,21 @@
           id: "multinomial", term: "Multinomial Naïve Bayes",
           en: "A Naïve Bayes variant that models the counts of discrete features, commonly word occurrences in text.",
           el: "Παραλλαγή του Naïve Bayes που αξιοποιεί πόσες φορές εμφανίζεται κάθε λέξη.",
-          example: "The class has eight total word occurrences, and 'win' occurs twice in Spam.",
+          example: "In a sample Spam class with eight word occurrences, 'win' can occur twice.",
           distinction: "It uses token counts rather than only whether a word appears at least once."
         },
         {
           id: "laplace", term: "Laplace Smoothing (Add-One)",
           en: "An additive smoothing method that increases every vocabulary word count by one when estimating class-conditional probabilities.",
           el: "Τεχνική εξομάλυνσης που προσθέτει 1 στις συχνότητες ώστε οι γνωστές λέξεις με μηδενικές εμφανίσεις να μην πάρουν πιθανότητα μηδέν.",
-          example: "P(win | Normal) = (0 + 1)/(8 + 13) = 1/21.",
+          example: "If Normal has 8 tokens and the vocabulary has 13 words, an absent word gets (0 + 1)/(8 + 13) = 1/21.",
           distinction: "Smoothing zero counts within the known vocabulary does not automatically solve the problem of entirely unseen words."
         },
         {
           id: "oov", term: "Out-of-Vocabulary (OOV) Word",
           en: "A word that does not appear in the model's training vocabulary.",
           el: "Λέξη που δεν περιλαμβάνεται στο λεξιλόγιο εκπαίδευσης.",
-          example: "'now', 'an' and 'prize' are OOV words in the assignment.",
+          example: "If 'prize' does not occur in the training vocabulary, it is OOV in a new message.",
           distinction: "This assignment ignores OOV words; other designs can assign them an explicit unknown-word feature."
         },
         {

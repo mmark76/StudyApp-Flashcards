@@ -137,6 +137,8 @@
     }
   });
 
+  byId("restore-btn").addEventListener("click", () => byId("import-input").click());
+
   byId("import-input").addEventListener("change", async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
