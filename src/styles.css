@@ -182,13 +182,13 @@ button:focus-visible, select:focus-visible, a:focus-visible {
   letter-spacing: 0.05em;
   margin: 0;
 }
-.intro h2 {
+.intro h1 {
   font-size: clamp(1.5rem, 2.4vw, 2rem);
   line-height: 1.2;
   letter-spacing: -0.025em;
   margin: var(--space-2) 0;
 }
-.intro h2 em { font-style: normal; color: var(--app-accent-strong); }
+.intro h1 em { font-style: normal; color: var(--app-accent-strong); }
 .intro p:not(.eyebrow) {
   max-width: 38rem;
   font-size: var(--font-size-sm);

@@ -69,5 +69,6 @@ test("the header offers real return paths and the appearance module", () => {
   assert.match(page, /href="https:\/\/studyapp\.markellosecosystem\.com\/#\/workspace-beta"/);
   assert.match(page, /href="https:\/\/markellosecosystem\.com\/"/);
   assert.match(page, /id="theme-toggle"/);
-  assert.match(page, /src="src\/appearance\.js"/);
+  assert.match(page, /src="src\/appearance\.js\?v=0\.1\.1"/);
+  assert.match(page, /href="src\/styles\.css\?v=0\.1\.1"/);
 });
